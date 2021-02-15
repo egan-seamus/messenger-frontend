@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactScrollableList from 'react-scrollable-list';
+import './messageMain.css'
 
 // for style see 
 // css-tricks on grid layouts
@@ -49,21 +50,36 @@ class SideBar extends React.Component {
             id : entry.username,
             content : <MessageEntry username={entry.username} message={entry.message} />
         }
-        debugger;
     }
 
     render() {
         return (
             <div className="MessageSideBar">
-                <ul>
+                <ul className="mList">
                     {this.state.messages.map((entry) =>
                     <li>
                         <MessageEntry username={entry.username} message={entry.message} />
                     </li>
                     )}
                 </ul>
-                {/* <ReactScrollableList listItems={this.state.messages.map((entry) => 
-                    {this.getIDContentMap(entry)})} heightOfItem={60} /> */}
+                {/* <ReactScrollableList listItems={[{id: "test1", content: <p>testparagraph</p>},
+                                                {id: "test2", content: <p>testparagraph</p>},
+                                                {id: "test3", content: <p>testparagraph</p>},
+                                                {id: "test4", content: <p>testparagraph</p>},]} heightOfItem={60} maxItemsToRender={2} /> */}
+            </div>
+        );
+    }
+}
+
+class ConversationView extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <div className="ConversationView">
+
             </div>
         );
     }
@@ -86,6 +102,8 @@ class MessageMain extends React.Component {
         return (
             <div className="MainPageBackground">
                 <SideBar messages={this.state.messages}></SideBar>
+                <ConversationView></ConversationView>
+                <div className="rightSide" />
             </div>
         );
     }

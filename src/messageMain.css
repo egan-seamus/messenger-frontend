@@ -1,0 +1,41 @@
+.MessageSideBar {
+    overflow-y : scroll;
+    grid-column-start: 1;
+    grid-column-end:   3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+
+
+}
+
+.mList {
+    list-style-type : none;
+    padding: 0;
+    margin:0;
+}
+
+.ConversationView {
+    overflow-y : scroll;
+    grid-column-start: 2;
+    grid-column-end :  3;
+    grid-row-start : 2;
+    grid-row-end : 3;
+    background-color : blue;
+}
+
+.rightSide {
+    grid-column-start: 3;
+    grid-column-end : 4;
+    grid-row-start: 2;
+    grid-row-end: 4;
+    background-color: red;
+}
+
+.MainPageBackground {
+    display: grid;
+    grid-template-columns: 200px auto 200px;
+    grid-template-rows: 5vh auto 5vh;
+    width  : 100%;
+    height : 100%;
+
+}

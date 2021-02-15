@@ -25,7 +25,15 @@ const DummyMap = [
   MakeCombo("Lisa", "what's up"),
   MakeCombo("William", "Have you seen my ipa bro?"),
   MakeCombo("Ben", "a ridiculously long message will be quite nice here \
-  so that we can really see what kind of text length these panels can handle")
+  so that we can really see what kind of text length these panels can handle"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message"),
+  MakeCombo("Sender", "message message message message message")
 ];
 
 const App = () => (
