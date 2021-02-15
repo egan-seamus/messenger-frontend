@@ -1,0 +1,90 @@
+.MessageSideBar {
+    overflow-y : scroll;
+    grid-column-start: 1;
+    grid-column-end:   3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    border-style : rounded;
+    border: 1px solid black;
+    width : 200px;
+}
+
+.MessageEntry {
+    display : flex;
+    flex-direction: column;
+    border: 1px solid black;
+    height: 75px;
+    background-color : white;
+}
+
+.MessageEntry:hover {
+    background-color : rgba(0,0,0,0.4);
+}
+
+.MessageEntrySender {
+    order: 1;
+    padding: 0px;
+    margin: 0px;
+    font-size: 30px
+}
+
+.MessageEntryBody {
+    order: 2;
+    width: 100%;
+    overflow: hidden;
+    line-height : 1;
+}
+
+.mList {
+    list-style-type : none;
+    padding: 0;
+    margin:0;
+}
+
+.ConversationView {
+    overflow-y : scroll;
+    grid-column-start: 2;
+    grid-column-end :  3;
+    grid-row-start : 2;
+    grid-row-end : 3;
+    background-color : rgb(201, 201, 223);
+    display : flex;
+}
+
+.ConversationList {
+    display : flex;
+    flex-direction : column-reverse;
+    align-self : flex-end;
+    list-style-type : none;
+    width : 100%;
+}
+
+.ConversationMessageReceived {
+    align-self: flex-start;
+    background-color : rgb(151, 233, 169);
+    width : 40%;
+}
+
+.ConversationMessageSent {
+    width : 40%;
+    margin-left : 60%;
+    align-self: flex-end;
+    background-color : rgb(79, 79, 179);
+}
+
+.rightSide {
+    grid-column-start: 3;
+    grid-column-end : 4;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    background-color: red;
+}
+
+.MainPageBackground {
+    display: grid;
+    grid-template-columns: 200px auto 200px;
+    grid-template-rows: 5vh auto 5vh;
+    width  : 100%;
+    height : 100%;
+
+}

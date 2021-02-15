@@ -31,8 +31,6 @@ class LoginForm extends React.Component {
 
   handleSubmitButton(e) {
     e.preventDefault();
-    console.log("Username: ", this.state.username);
-    console.log("Password: ", this.state.password);
     axios.post(baseURL.concat(loginURL), {
       username: this.state.username,
       password: this.state.password
