@@ -17,23 +17,23 @@ const loginPage = Login;
 const registerPage = Register;
 const homePage = Home;
 
-function MakeCombo(n, m) {
-  return {username: n, message: m}
+function MakeCombo(n, i, m) {
+  return {username: n, id: i, message: m}
 }
 const DummyMap = [
-  MakeCombo("John", "Hey dude"),
-  MakeCombo("Lisa", "what's up"),
-  MakeCombo("William", "Have you seen my ipa bro?"),
-  MakeCombo("Ben", "a ridiculously long message will be quite nice here \
+  MakeCombo("John", 1, "Hey dude"),
+  MakeCombo("Lisa", 2,"what's up"),
+  MakeCombo("William", 3,"Have you seen my ipa bro?"),
+  MakeCombo("Ben", 4,"a ridiculously long message will be quite nice here \
   so that we can really see what kind of text length these panels can handle"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message"),
-  MakeCombo("Sender", "message message message message message")
+  MakeCombo("Sender", 5,"message message message message message"),
+  MakeCombo("Sender", 6, "message message message message message"),
+  MakeCombo("Sender", 7, "message message message message message"),
+  MakeCombo("Sender", 8, "message message message message message"),
+  MakeCombo("Sender", 9, "message message message message message"),
+  MakeCombo("Sender", 10, "message message message message message"),
+  MakeCombo("Sender", 11, "message message message message message"),
+  MakeCombo("Sender", 12, "message message message message message")
 ];
 
 const App = () => (
