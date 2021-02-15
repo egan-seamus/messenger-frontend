@@ -4,8 +4,29 @@
     grid-column-end:   3;
     grid-row-start: 2;
     grid-row-end: 3;
+    border-style : rounded;
+    border: 1px solid black;
+}
 
+.MessageEntry {
+    display : flex;
+    flex-direction: column;
+    border: 1px solid black;
+    height: 75px;
+}
 
+.MessageEntrySender {
+    order: 1;
+    padding: 0px;
+    margin: 0px;
+    font-size: 30px
+}
+
+.MessageEntryBody {
+    order: 2;
+    width: 150px;
+    overflow: hidden;
+    line-height : 1;
 }
 
 .mList {
@@ -27,7 +48,7 @@
     grid-column-start: 3;
     grid-column-end : 4;
     grid-row-start: 2;
-    grid-row-end: 4;
+    grid-row-end: 3;
     background-color: red;
 }
 

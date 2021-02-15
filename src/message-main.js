@@ -22,9 +22,9 @@ class MessageEntry extends React.Component {
 
     render() {
         return (
-            <div className="MessageSideBarChild">
-                <h1>{this.state.username}</h1>
-                <p1>{this.state.message}</p1>
+            <div className="MessageEntry">
+                <h1 className= "MessageEntrySender">{this.state.username}</h1>
+                <p1 className= "MessageEntryBody">{this.state.message}</p1>
             </div>
         );
     }
