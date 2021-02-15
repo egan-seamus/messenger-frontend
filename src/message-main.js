@@ -18,11 +18,13 @@ class MessageEntry extends React.Component {
             message: props.message,
             username: props.username
         }
+        this.handleClick = props.handleClick;
     }
+
 
     render() {
         return (
-            <div className="MessageEntry">
+            <div className="MessageEntry" onClick={(e) => this.handleClick(e, this.state.message)}>
                 <h1 className= "MessageEntrySender">{this.state.username}</h1>
                 <p1 className= "MessageEntryBody">{this.state.message}</p1>
             </div>
@@ -43,13 +45,8 @@ class SideBar extends React.Component {
         this.state = {
             messages: props.messages
         }
-    }
 
-    getIDContentMap(entry) {
-        return {
-            id : entry.username,
-            content : <MessageEntry username={entry.username} message={entry.message} />
-        }
+        this.entryCallback = props.entryCallback;
     }
 
     render() {
@@ -58,14 +55,11 @@ class SideBar extends React.Component {
                 <ul className="mList">
                     {this.state.messages.map((entry) =>
                     <li>
-                        <MessageEntry username={entry.username} message={entry.message} />
+                        <MessageEntry username={entry.username} message={entry.message} 
+                        handleClick = {this.entryCallback} />
                     </li>
                     )}
                 </ul>
-                {/* <ReactScrollableList listItems={[{id: "test1", content: <p>testparagraph</p>},
-                                                {id: "test2", content: <p>testparagraph</p>},
-                                                {id: "test3", content: <p>testparagraph</p>},
-                                                {id: "test4", content: <p>testparagraph</p>},]} heightOfItem={60} maxItemsToRender={2} /> */}
             </div>
         );
     }
@@ -96,12 +90,18 @@ class MessageMain extends React.Component {
         this.state = {
             messages: props.messages
         }
+
+    }
+
+    handleMessagePreviewClick(e, name) {
+        e.preventDefault();
+        console.log(name);
     }
 
     render() {
         return (
             <div className="MainPageBackground">
-                <SideBar messages={this.state.messages}></SideBar>
+                <SideBar messages={this.state.messages} entryCallback = {this.handleMessagePreviewClick}></SideBar>
                 <ConversationView></ConversationView>
                 <div className="rightSide" />
             </div>
