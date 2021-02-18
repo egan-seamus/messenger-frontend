@@ -1,6 +1,5 @@
-import React, {Suspense, lazy} from 'react';
+import React, {Suspense} from 'react';
 import './App.css';
-import axios from 'axios';
 import Login from './login';
 import Register from './register';
 import Home from './home'
@@ -9,8 +8,7 @@ import MessageMain from './message-main'
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 
 const loginPage = Login;
