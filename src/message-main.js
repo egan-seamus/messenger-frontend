@@ -82,7 +82,7 @@ class ConversationMessage extends React.Component {
     }
 
     render() {
-        if (this.props.id == 0) {
+        if (this.state.id === 0) {
             return (
                 <div className="ConversationMessageSent">
                     {this.state.message}
@@ -112,6 +112,7 @@ function ConversationView(props){
                         <ConversationMessage id={entry.id} message={entry.message} />
                     </li>
                 )}
+                <div id="conversationAnchor" />
             </ul>
         </div>
     );
@@ -124,20 +125,6 @@ const r = { message: "receive receive", id: 2 };
 
 
 
-const conversations = [
-    [s, r, r, r, s, s, s],
-    [{ message: "one", id: 2 }, { message: "two", id: 0 }, { message: "three", id: 2 }, s, r, s, s],
-    [r, r, r, r, r, r, r, s],
-    [s, r, s, r, s, s, s, s, r, r],
-    [s, r, s, r, s, s, s, s, s, s],
-    [s, r, r, r, s, s, s, r, s, s, r,],
-    [s, r, r, r, s, r, s, r, s],
-    [s, r, r, r, s, s, s],
-    [s, r, r, r, s, s, s, r, r, s, r, r, r, r],
-    [s, r, r, r, s, s, s],
-    [s, r, s, r, s, s, s],
-    [s, r, r, r, s, s, s]
-]
 // the messanger main page
 class MessageMain extends React.Component {
     // props must include
@@ -155,17 +142,38 @@ class MessageMain extends React.Component {
 
         this.state = {
             messages: props.messages,
-            conversationMessages: []
+            conversationMessages: [],
+            currentUserID: 0,
         }
 
     }
 
+    /**
+     * 
+     * @param {int} id the id of the user who's messages we want to look at
+     * TODO implement correctly by calling to backend
+     */
+    getMessages(id) {
+        let newMessages = []
+        // generate some dummy data 
+        for(let i = 0; i < 100; i++) {
+            if(Math.floor(Math.random() * 2) === 1) {
+                newMessages.push(r)
+            }
+            else {
+                newMessages.push(s)
+            }
+        }
+
+        // use the dummy data 
+        this.setState({
+            conversationMessages : newMessages
+        })
+    }
+
     handleMessagePreviewClick = (e, id) => {
         e.preventDefault();
-        console.log(id);
-        this.setState({
-            conversationMessages: conversations[id]
-        })
+        this.getMessages(id)
         console.log(this.state);
     }
 

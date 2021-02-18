@@ -48,7 +48,9 @@
     grid-row-start : 2;
     grid-row-end : 3;
     background-color : rgb(201, 201, 223);
-    display : flex;
+    /* display : flex; */
+    overflow-anchor : none;
+    
 }
 
 .ConversationList {
@@ -57,16 +59,26 @@
     align-self : flex-end;
     list-style-type : none;
     width : 100%;
+    padding: 0px;
+    overflow-anchor : none;
+}
+
+#conversationAnchor {
+    overflow-anchor : auto;
+
+    height: 1px;
+}
+
+.ConversationMessageReceived, .ConversationMessageSent {
+    width : 40%;
 }
 
 .ConversationMessageReceived {
     align-self: flex-start;
     background-color : rgb(151, 233, 169);
-    width : 40%;
 }
 
 .ConversationMessageSent {
-    width : 40%;
     margin-left : 60%;
     align-self: flex-end;
     background-color : rgb(79, 79, 179);
