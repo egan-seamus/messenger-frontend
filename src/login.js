@@ -12,7 +12,8 @@ class LoginForm extends React.Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      error: ""
     }
   }
 
@@ -22,6 +23,10 @@ class LoginForm extends React.Component {
 
   handlePasswordChange = (e) => {
     this.setState({ password: e.target.value });
+  }
+
+  showError = (message) => {
+    this.setState({errors: message});
   }
 
   handleSubmitButton(e) {
@@ -37,8 +42,12 @@ class LoginForm extends React.Component {
         {withCredentials : true})
           .then((response) => {
             console.log(response);
-          }).catch((error) =>{console.log(error)})
-      }).catch((error) =>{console.log(error)});
+          }).catch((response) => {
+            this.showError("Login failed. Do you have cookies enabled?");
+          })
+      }).catch((response) => {
+        this.showError("Incorrect username or password");
+      });
 
   }
 
@@ -48,6 +57,7 @@ class LoginForm extends React.Component {
         <div class="loginText">
           Log In
             </div>
+        <h2 class="errorMessage">{this.state.errors}</h2>
         <div class="homeButtons">
           <Form>
             <Form.Group controlId="formBasicEmail">
