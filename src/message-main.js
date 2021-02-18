@@ -1,6 +1,7 @@
 import React from 'react';
-import ReactScrollableList from 'react-scrollable-list';
-import './messageMain.css'
+import './messageMain.css';
+import authenticate from './authenticate.js'
+import {Redirect} from 'react-router-dom'
 
 // for style see 
 // css-tricks on grid layouts
@@ -102,13 +103,12 @@ class ConversationMessage extends React.Component {
 
 
 
-function ConversationView(props){
-    console.log(props)
+function ConversationView(props) {
     return (
         <div className="ConversationView">
             <ul className="ConversationList">
                 {props.messages.map((entry) =>
-                    <li>
+                    <li className="ConversationLI">
                         <ConversationMessage id={entry.id} message={entry.message} />
                     </li>
                 )}
@@ -155,11 +155,30 @@ class MessageMain extends React.Component {
 
         this.state = {
             messages: props.messages,
-            conversationMessages: []
+            conversationMessages: [],
+            login: "waiting"
         }
 
     }
 
+    componentDidMount() {
+        authenticate.then((authenticated) => {
+            if (authenticated) {
+                console.log("authenticated", authenticated)
+                this.setState({
+                    login: "logged in"
+                })
+            }
+            
+        }).catch((authenticated) => {
+
+            console.log("nauthenticated", authenticated)
+                this.setState({
+                    login: "failed"
+                })
+            
+        })
+    }
     handleMessagePreviewClick = (e, id) => {
         e.preventDefault();
         console.log(id);
@@ -170,6 +189,7 @@ class MessageMain extends React.Component {
     }
 
     render() {
+        if(this.state.login === "logged in") {
         return (
             <div className="MainPageBackground">
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
@@ -177,6 +197,15 @@ class MessageMain extends React.Component {
                 <div className="rightSide" />
             </div>
         );
+        }
+        else if(this.state.login === "waiting") {
+            return(<div>Loading...</div>)
+        }
+        else {
+            return(
+                <Redirect to="/login"/>
+              );
+        }
     }
 }
 

@@ -3,17 +3,18 @@ import Form from 'react-bootstrap/Form';
 import React from 'react';
 import './login.css';
 import axios from 'axios';
+import { Redirect } from 'react-router-dom'
 
 const baseURL = "http://localhost:8000/"
 const loginURL = "messaging/login/"
-
 class LoginForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       password: "",
-      error: ""
+      error: "",
+      loggedIn: false
     }
   }
 
@@ -26,7 +27,7 @@ class LoginForm extends React.Component {
   }
 
   showError = (message) => {
-    this.setState({errors: message});
+    this.setState({ errors: message });
   }
 
   handleSubmitButton(e) {
@@ -34,14 +35,17 @@ class LoginForm extends React.Component {
     axios.post(baseURL.concat(loginURL), {
       username: this.state.username,
       password: this.state.password
-    }, {withCredentials : true})
+    }, { withCredentials: true })
       .then((response) => {
         console.log(response);
         console.log("authenticating");
-        axios.get(baseURL.concat("messaging/authenticate/"), 
-        {withCredentials : true})
+        axios.get(baseURL.concat("messaging/authenticate/"),
+          { withCredentials: true })
           .then((response) => {
             console.log(response);
+            this.setState ({
+              loggedIn : true
+            })
           }).catch((response) => {
             this.showError("Login failed. Do you have cookies enabled?");
           })
@@ -52,32 +56,39 @@ class LoginForm extends React.Component {
   }
 
   render() {
-    return (
-      <div class="background">
-        <div class="loginText">
-          Log In
+    if (!this.state.loggedIn) {
+      return (
+        <div class="background">
+          <div class="loginText">
+            Log In
             </div>
-        <h2 class="errorMessage">{this.state.errors}</h2>
-        <div class="homeButtons">
-          <Form>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Label>Username</Form.Label>
-              <Form.Control type="username" placeholder="Enter username" onChange={(e) => this.handleUsernameChange(e)} />
-            </Form.Group>
+          <h2 class="errorMessage">{this.state.errors}</h2>
+          <div class="homeButtons">
+            <Form>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="username" placeholder="Enter username" onChange={(e) => this.handleUsernameChange(e)} />
+              </Form.Group>
 
-            <Form.Group controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" onChange={(e) => this.handlePasswordChange(e)} />
-            </Form.Group>
-            <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitButton(e)}>
-              Submit
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" placeholder="Password" onChange={(e) => this.handlePasswordChange(e)} />
+              </Form.Group>
+              <Button variant="primary" type="submit" onClick={(e) => this.handleSubmitButton(e)}>
+                Submit
   </Button>
-          </Form>
+            </Form>
+          </div>
+
         </div>
 
-      </div>
-
-    );
+      );
+    }
+    else {
+      return(
+        <Redirect to="/messages"/>
+      );
+    }
   }
 }
 
