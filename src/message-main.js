@@ -1,3 +1,4 @@
+import { render } from '@testing-library/react';
 import React from 'react';
 import ReactScrollableList from 'react-scrollable-list';
 import './messageMain.css'
@@ -75,6 +76,7 @@ class ConversationMessage extends React.Component {
      */
     constructor(props) {
         super(props);
+        console.log(props)
         this.state = {
             message: props.message,
             id: props.id
@@ -102,7 +104,7 @@ class ConversationMessage extends React.Component {
 
 
 
-function ConversationView(props){
+function ConversationView(props) {
     console.log(props)
     return (
         <div className="ConversationView">
@@ -123,7 +125,35 @@ const s = { message: "send send", id: 0 };
 
 const r = { message: "receive receive", id: 2 };
 
+class MessageTypingBar extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            messageText : ""
+        }
+    }
 
+    handleClick = (e) => {
+        e.preventDefault()
+        this.props.onMessageSend(this.state.messageText);
+    }
+
+    handleMessageChange = (e) => {
+        e.preventDefault()
+        this.setState({messageText : e.target.value})
+    }
+
+    render() {
+    return (
+        <div className="MessageTypingBar">
+            <form id="messageInputForm" action="">
+                <input id="messageInputFormInput" autocomplete="off" onChange={(e) => this.handleMessageChange(e)} />
+                <button id="messageInputFormButton" onClick={(e) => this.handleClick(e)}>Send</button>
+            </form>
+        </div>
+    )
+    }
+}
 
 // the messanger main page
 class MessageMain extends React.Component {
@@ -144,8 +174,16 @@ class MessageMain extends React.Component {
             messages: props.messages,
             conversationMessages: [],
             currentUserID: 0,
+            selectedUserID: 1
         }
 
+    }
+
+    sendMessage = (text) => {
+        let m = this.state.conversationMessages;
+        let newM = {message: text, id: 0}
+        m.push(newM)
+        this.setState({conversationMessages : m})
     }
 
     /**
@@ -156,8 +194,8 @@ class MessageMain extends React.Component {
     getMessages(id) {
         let newMessages = []
         // generate some dummy data 
-        for(let i = 0; i < 100; i++) {
-            if(Math.floor(Math.random() * 2) === 1) {
+        for (let i = 0; i < 20; i++) {
+            if (Math.floor(Math.random() * 2) === 1) {
                 newMessages.push(r)
             }
             else {
@@ -167,14 +205,20 @@ class MessageMain extends React.Component {
 
         // use the dummy data 
         this.setState({
-            conversationMessages : newMessages
+            conversationMessages: newMessages
         })
+    }
+
+    getPreviews() {
+
     }
 
     handleMessagePreviewClick = (e, id) => {
         e.preventDefault();
         this.getMessages(id)
-        console.log(this.state);
+        this.setState({
+            selectedUserID : id
+        })
     }
 
     render() {
@@ -183,6 +227,7 @@ class MessageMain extends React.Component {
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                 <ConversationView messages={this.state.conversationMessages}></ConversationView>
                 <div className="rightSide" />
+                <MessageTypingBar onMessageSend={this.sendMessage}/>
             </div>
         );
     }
