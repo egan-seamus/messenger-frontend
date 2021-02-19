@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
+import { useEffect, useRef } from 'react'
 import ReactScrollableList from 'react-scrollable-list';
 import './messageMain.css'
 
@@ -105,6 +106,14 @@ class ConversationMessage extends React.Component {
 
 
 function ConversationView(props) {
+    const messagesEndRef = useRef(null)
+
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+
+    useEffect(scrollToBottom)
+
     console.log(props)
     return (
         <div className="ConversationView">
@@ -114,7 +123,7 @@ function ConversationView(props) {
                         <ConversationMessage id={entry.id} message={entry.message} />
                     </li>
                 )}
-                <div id="conversationAnchor" />
+                <div id="conversationAnchor" ref={messagesEndRef}/>
             </ul>
         </div>
     );
@@ -129,7 +138,7 @@ class MessageTypingBar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            messageText : ""
+            messageText: ""
         }
     }
 
@@ -140,18 +149,18 @@ class MessageTypingBar extends React.Component {
 
     handleMessageChange = (e) => {
         e.preventDefault()
-        this.setState({messageText : e.target.value})
+        this.setState({ messageText: e.target.value })
     }
 
     render() {
-    return (
-        <div className="MessageTypingBar">
-            <form id="messageInputForm" action="">
-                <input id="messageInputFormInput" autocomplete="off" onChange={(e) => this.handleMessageChange(e)} />
-                <button id="messageInputFormButton" onClick={(e) => this.handleClick(e)}>Send</button>
-            </form>
-        </div>
-    )
+        return (
+            <div className="MessageTypingBar">
+                <form id="messageInputForm" action="">
+                    <input id="messageInputFormInput" autocomplete="off" onChange={(e) => this.handleMessageChange(e)} />
+                    <button id="messageInputFormButton" onClick={(e) => this.handleClick(e)}>Send</button>
+                </form>
+            </div>
+        )
     }
 }
 
@@ -181,9 +190,9 @@ class MessageMain extends React.Component {
 
     sendMessage = (text) => {
         let m = this.state.conversationMessages;
-        let newM = {message: text, id: 0}
+        let newM = { message: text, id: 0 }
         m.push(newM)
-        this.setState({conversationMessages : m})
+        this.setState({ conversationMessages: m })
     }
 
     /**
@@ -217,7 +226,7 @@ class MessageMain extends React.Component {
         e.preventDefault();
         this.getMessages(id)
         this.setState({
-            selectedUserID : id
+            selectedUserID: id
         })
     }
 
@@ -227,7 +236,7 @@ class MessageMain extends React.Component {
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                 <ConversationView messages={this.state.conversationMessages}></ConversationView>
                 <div className="rightSide" />
-                <MessageTypingBar onMessageSend={this.sendMessage}/>
+                <MessageTypingBar onMessageSend={this.sendMessage} />
             </div>
         );
     }
