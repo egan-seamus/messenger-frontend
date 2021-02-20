@@ -12,15 +12,6 @@ const previewsURL = baseURL.concat("messaging/previews/")
 const idURL = baseURL.concat("messaging/id/")
 const conversationURL = baseURL.concat("messaging/conversation/")
 
-/**
- * GAMEPLAN FOR FEB 20
- * Switch get message previews over to client / server action
- * to do: 
- * create 3-4 dummy users and dummy messages with them
- * login as username user
- * load my conversations from the server
- */
-
 // one entry in the message side bar
 // should display a username and the most 
 // recent message
@@ -69,38 +60,28 @@ function SideBar(props) {
 }
 
 // represents one message in the current conversation
-class ConversationMessage extends React.Component {
-    /**
+/**
      * @param {*} props contains { message : string, id : int}
      * }
-     * where message is the message text and id the id of the recipient
+     * where message is the message text and id the id of the sender
      */
-    constructor(props) {
-        super(props);
-        console.log(props)
-        this.state = {
-            message: props.message,
-            id: props.id
-        };
-    }
+function ConversationMessage(props)  {
 
-    render() {
-        if (this.state.id === 0) {
+        if (props.id === props.myID) {
             return (
                 <div className="ConversationMessageSent">
-                    {this.state.message}
+                    {props.message}
                 </div>
             );
         }
         else {
             return (
                 <div className="ConversationMessageReceived">
-                    {this.state.message}
+                    {props.message}
                 </div>
             );
         }
 
-    }
 }
 
 
@@ -120,7 +101,7 @@ function ConversationView(props) {
             <ul className="ConversationList">
                 {props.messages.map((entry) =>
                     <li>
-                        <ConversationMessage id={entry.id} message={entry.message} />
+                        <ConversationMessage id={entry.id} message={entry.message} myID={props.myID}/>
                     </li>
                 )}
                 <div id="conversationAnchor" ref={messagesEndRef} />
@@ -241,26 +222,16 @@ class MessageMain extends React.Component {
 
     sendMessage = (text) => {
         let m = this.state.conversationMessages;
-        let newM = { message: text, id: 0 }
+        let newM = { message: text, id: this.state.currentUserID }
         m.push(newM)
         this.setState({ conversationMessages: m })
     }
 
     /**
-     * 
      * @param {int} id the id of the user who's messages we want to look at
      * TODO implement correctly by calling to backend
      */
     getMessages(id) {
-        // generate some dummy data 
-        // for (let i = 0; i < 20; i++) {
-        //     if (Math.floor(Math.random() * 2) === 1) {
-        //         newMessages.push(r)
-        //     }
-        //     else {
-        //         newMessages.push(s)
-        //     }
-        // }
         axios.post(conversationURL, {
             recipient_id: id,
         }, { withCredentials: true }).then((response) => {
@@ -296,7 +267,7 @@ class MessageMain extends React.Component {
         return (
             <div className="MainPageBackground">
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
-                <ConversationView messages={this.state.conversationMessages}></ConversationView>
+                <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
                 <div className="rightSide" />
                 <MessageTypingBar onMessageSend={this.sendMessage} />
             </div>
