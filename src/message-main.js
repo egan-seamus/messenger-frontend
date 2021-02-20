@@ -1,11 +1,25 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { useEffect, useRef } from 'react'
-import ReactScrollableList from 'react-scrollable-list';
 import './messageMain.css'
+import axios from 'axios';
 
 // for style see 
 // css-tricks on grid layouts
+
+const baseURL = "http://localhost:8000/"
+const previewsURL = baseURL.concat("messaging/previews/")
+const idURL = baseURL.concat("messaging/id/")
+const conversationURL = baseURL.concat("messaging/conversation/")
+
+/**
+ * GAMEPLAN FOR FEB 20
+ * Switch get message previews over to client / server action
+ * to do: 
+ * create 3-4 dummy users and dummy messages with them
+ * login as username user
+ * load my conversations from the server
+ */
 
 // one entry in the message side bar
 // should display a username and the most 
@@ -123,7 +137,7 @@ function ConversationView(props) {
                         <ConversationMessage id={entry.id} message={entry.message} />
                     </li>
                 )}
-                <div id="conversationAnchor" ref={messagesEndRef}/>
+                <div id="conversationAnchor" ref={messagesEndRef} />
             </ul>
         </div>
     );
@@ -180,11 +194,62 @@ class MessageMain extends React.Component {
         super(props);
 
         this.state = {
-            messages: props.messages,
+            messages: [],
             conversationMessages: [],
-            currentUserID: 0,
+            currentUserID: -1,
             selectedUserID: 1
         }
+
+    }
+
+    // functions to call after we begin to exist
+    componentDidMount() {
+        // get the correct user id
+        axios.post(idURL, {
+            username: this.state.username,
+            password: this.state.password
+        }, { withCredentials: true })
+            .then((response) => {
+                this.setState({
+                    currentUserID: response.data.id
+                })
+                console.log("User ID: ", this.state.currentUserID)
+
+                // get the message previews
+                axios.post(previewsURL, {
+                    username: this.state.username,
+                    password: this.state.password
+                }, { withCredentials: true })
+                    .then((response) => {
+                        let previews = []
+                        for (let i = 0; i < response.data.length; i++) {
+                            let entry = 
+                            {
+                                username : response.data[i].username,
+                                id : response.data[i].sender_id === this.state.currentUserID ? response.data[i].recipient_id : response.data[i].sender_id,
+                                message : response.data[i].message 
+                            }
+                            previews.push(entry)
+                        }
+
+                        // {username: string, id: int, message : string}
+                        // where id is the id of the not-this-person in the 
+                        // message
+                        this.setState({
+                            messages: previews
+                        }) 
+                        console.log(this.state.messages)
+
+                        console.log(response)
+                    }).catch((response) => {
+                        // if we don't get the messages
+                        console.log(response)
+                    })
+
+            }).catch((response) => {
+
+            })
+
 
     }
 
