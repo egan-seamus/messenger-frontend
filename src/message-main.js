@@ -11,6 +11,35 @@ const baseURL = "http://localhost:8000/"
 const previewsURL = baseURL.concat("messaging/previews/")
 const idURL = baseURL.concat("messaging/id/")
 const conversationURL = baseURL.concat("messaging/conversation/")
+const searchURL = baseURL.concat("messaging/search/")
+
+// one single result from a search
+// props needed: username, id, onClick(e, id)
+function SearchBarResult(props) {
+
+    return (
+        <div className="searchResult" onClick={(e) => props.onClick(e, props.id)}>
+            {props.username}
+        </div>
+    )
+}
+
+// props needed 
+// searchResults {username, id}, onChildClick(e, id), 
+// onSearchFormChange(e), onSearchButtonClick(e)
+function SearchBar(props) {
+    return(
+        <div className="searchBar"> 
+        <form id="searchInputform" action="">
+                    <input id="searchInputformInput" autocomplete="off" placeholder="search" onChange={(e) => props.onSearchFormChange(e)} />
+                    <button id="searchInputformButton" onClick={(e) => props.onSearchButtonClick(e)}>Search</button>
+                </form>
+        {props.searchResults.map((result) => 
+            <SearchBarResult onClick={props.onChildClick} id={result.id} username={result.username}></SearchBarResult>
+        )}
+        </div>
+    )
+}
 
 // one entry in the message side bar
 // should display a username and the most 
@@ -40,7 +69,7 @@ class MessageEntry extends React.Component {
     }
 }
 
-// the side bar fro the messanger main page
+// the side bar for the messanger main page
 function SideBar(props) {
 
 
@@ -164,7 +193,8 @@ class MessageMain extends React.Component {
             messages: [],
             conversationMessages: [],
             currentUserID: -1,
-            selectedUserID: 1
+            selectedUserID: 1,
+            searchResults: []
         }
 
     }
@@ -251,8 +281,6 @@ class MessageMain extends React.Component {
         }).catch((response) => {
 
         })
-
-
     }
 
     handleMessagePreviewClick = (e, id) => {
@@ -263,12 +291,53 @@ class MessageMain extends React.Component {
         })
     }
 
+    getSearchResults = (q) => {
+        axios.post(searchURL, {
+            query: q,
+        }, { withCredentials: true }).then((response) => {
+            console.log(response)
+            let results = []
+            for(let i = 0; i < response.data.length; i++) {
+                results.push({
+                    id : response.data[i].id,
+                    username : response.data[i].username
+                })
+            }
+            this.setState({
+                searchResults : results
+            })
+
+        }).catch((response) => {
+            console.log(response)
+        })
+    }
+
+    // props needed 
+    // searchResults {username, id}, onChildClick, 
+    // onSearchFormChange(e, id), onSearchButtonClick(e)
+    onSearchFormChange = (e) => {
+        e.preventDefault()
+        this.getSearchResults(e.target.value)
+
+    }
+
+    onSearchButtonClick = (e) => {
+        e.preventDefault()
+
+    }
+
+    onSearchResultClick = (e, id) => {
+        e.preventDefault()
+
+    }
+
     render() {
         return (
             <div className="MainPageBackground">
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                 <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
-                <div className="rightSide" />
+                <SearchBar searchResults = {this.state.searchResults} onChildClick={this.onSearchResultClick} 
+                onSearchFormChange={this.onSearchFormChange} onSearchButtonClick={this.onSearchButtonClick} />
                 <MessageTypingBar onMessageSend={this.sendMessage} />
             </div>
         );

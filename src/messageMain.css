@@ -98,6 +98,32 @@
     background-color: #a36f6c;
 }
 
+.searchResult {
+    border: 1px solid black;
+
+}
+
+.searchBar {
+    grid-column-start: 3;
+    grid-column-end : 4;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    background-color: #a36f6c;
+}
+
+#searchInputformInput {
+    width : 90%;
+
+}
+
+#searchInputformButton {
+    border-radius: 5px;
+    height: 90%;
+    width : 10%;
+    float : right;
+    padding: 0px;
+}
+
 .MessageTypingBar {
     grid-column-start : 1;
     grid-column-end : 4;
