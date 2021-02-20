@@ -50,36 +50,22 @@ class MessageEntry extends React.Component {
 }
 
 // the side bar fro the messanger main page
-class SideBar extends React.Component {
+function SideBar(props) {
 
-    // props must include 
-    // messages - an array of maps
-    // the maps must take the following format
-    // {username: string, id: int, message : string}
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            messages: props.messages
-        }
+    return (
+        <div className="MessageSideBar">
+            <ul className="mList">
+                {props.messages.map((entry) =>
+                    <li>
+                        <MessageEntry username={entry.username} id={entry.id} message={entry.message}
+                            handleClick={props.entryCallback} />
+                    </li>
+                )}
+            </ul>
+        </div>
+    );
 
-        this.entryCallback = props.entryCallback;
-    }
-
-    render() {
-        return (
-            <div className="MessageSideBar">
-                <ul className="mList">
-                    {this.state.messages.map((entry) =>
-                        <li>
-                            <MessageEntry username={entry.username} id={entry.id} message={entry.message}
-                                handleClick={this.entryCallback} />
-                        </li>
-                    )}
-                </ul>
-            </div>
-        );
-    }
 }
 
 // represents one message in the current conversation
@@ -223,11 +209,11 @@ class MessageMain extends React.Component {
                     .then((response) => {
                         let previews = []
                         for (let i = 0; i < response.data.length; i++) {
-                            let entry = 
+                            let entry =
                             {
-                                username : response.data[i].username,
-                                id : response.data[i].sender_id === this.state.currentUserID ? response.data[i].recipient_id : response.data[i].sender_id,
-                                message : response.data[i].message 
+                                username: response.data[i].username,
+                                id: response.data[i].sender_id === this.state.currentUserID ? response.data[i].recipient_id : response.data[i].sender_id,
+                                message: response.data[i].message
                             }
                             previews.push(entry)
                         }
@@ -237,7 +223,7 @@ class MessageMain extends React.Component {
                         // message
                         this.setState({
                             messages: previews
-                        }) 
+                        })
                         console.log(this.state.messages)
 
                         console.log(response)
@@ -266,24 +252,35 @@ class MessageMain extends React.Component {
      * TODO implement correctly by calling to backend
      */
     getMessages(id) {
-        let newMessages = []
         // generate some dummy data 
-        for (let i = 0; i < 20; i++) {
-            if (Math.floor(Math.random() * 2) === 1) {
-                newMessages.push(r)
+        // for (let i = 0; i < 20; i++) {
+        //     if (Math.floor(Math.random() * 2) === 1) {
+        //         newMessages.push(r)
+        //     }
+        //     else {
+        //         newMessages.push(s)
+        //     }
+        // }
+        axios.post(conversationURL, {
+            recipient_id: id,
+        }, { withCredentials: true }).then((response) => {
+            console.log(response)
+            let newMessages = []// use the dummy data 
+            for(let i = 0; i < response.data.length; i++) {
+                let message = {
+                    id: response.data[i].sender_id,
+                    message : response.data[i].message
+                }
+                newMessages.push(message)
             }
-            else {
-                newMessages.push(s)
-            }
-        }
+            this.setState({
+                conversationMessages: newMessages
+            })
 
-        // use the dummy data 
-        this.setState({
-            conversationMessages: newMessages
+        }).catch((response) => {
+
         })
-    }
 
-    getPreviews() {
 
     }
 
