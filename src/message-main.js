@@ -3,6 +3,7 @@ import React from 'react';
 import { useEffect, useRef } from 'react'
 import './messageMain.css'
 import axios from 'axios';
+import openSocket from 'socket.io-client';
 
 // for style see 
 // css-tricks on grid layouts
@@ -28,15 +29,15 @@ function SearchBarResult(props) {
 // searchResults {username, id}, onChildClick(e, id), 
 // onSearchFormChange(e), onSearchButtonClick(e)
 function SearchBar(props) {
-    return(
-        <div className="searchBar"> 
-        <form id="searchInputform" action="">
-                    <input id="searchInputformInput" autocomplete="off" placeholder="search" onChange={(e) => props.onSearchFormChange(e)} />
-                    <button id="searchInputformButton" onClick={(e) => props.onSearchButtonClick(e)}>Search</button>
-                </form>
-        {props.searchResults.map((result) => 
-            <SearchBarResult onClick={props.onChildClick} id={result.id} username={result.username}></SearchBarResult>
-        )}
+    return (
+        <div className="searchBar">
+            <form id="searchInputform" action="">
+                <input id="searchInputformInput" autocomplete="off" placeholder="search" onChange={(e) => props.onSearchFormChange(e)} />
+                <button id="searchInputformButton" onClick={(e) => props.onSearchButtonClick(e)}>Search</button>
+            </form>
+            {props.searchResults.map((result) =>
+                <SearchBarResult onClick={props.onChildClick} id={result.id} username={result.username}></SearchBarResult>
+            )}
         </div>
     )
 }
@@ -94,22 +95,22 @@ function SideBar(props) {
      * }
      * where message is the message text and id the id of the sender
      */
-function ConversationMessage(props)  {
+function ConversationMessage(props) {
 
-        if (props.id === props.myID) {
-            return (
-                <div className="ConversationMessageSent">
-                    {props.message}
-                </div>
-            );
-        }
-        else {
-            return (
-                <div className="ConversationMessageReceived">
-                    {props.message}
-                </div>
-            );
-        }
+    if (props.id === props.myID) {
+        return (
+            <div className="ConversationMessageSent">
+                {props.message}
+            </div>
+        );
+    }
+    else {
+        return (
+            <div className="ConversationMessageReceived">
+                {props.message}
+            </div>
+        );
+    }
 
 }
 
@@ -130,7 +131,7 @@ function ConversationView(props) {
             <ul className="ConversationList">
                 {props.messages.map((entry) =>
                     <li>
-                        <ConversationMessage id={entry.id} message={entry.message} myID={props.myID}/>
+                        <ConversationMessage id={entry.id} message={entry.message} myID={props.myID} />
                     </li>
                 )}
                 <div id="conversationAnchor" ref={messagesEndRef} />
@@ -194,6 +195,7 @@ class MessageMain extends React.Component {
             conversationMessages: [],
             currentUserID: -1,
             selectedUserID: 1,
+            socket: null,
             searchResults: []
         }
 
@@ -243,6 +245,25 @@ class MessageMain extends React.Component {
                         console.log(response)
                     })
 
+                // open a socket
+                const newSocket = openSocket('http://localhost:3001', {
+                    withCredentials: false,
+                    extraHeaders: {
+                        "user_id": this.state.currentUserID
+                    }
+                });
+                this.setState({
+                    socket: newSocket
+                })
+                console.log("socket opened")
+                console.log(this.state.socket)
+
+                this.state.socket.on('message-to-client', (message) => {
+                    console.log(message)
+                    this.receiveMessage(message)
+                })
+
+
             }).catch((response) => {
 
             })
@@ -250,7 +271,25 @@ class MessageMain extends React.Component {
 
     }
 
+    receiveMessage = (message) => {
+        if (message.sender_id == this.state.selectedUserID) {
+            let m = this.state.conversationMessages;
+            let newM = { message: message.text, id: message.sender_id }
+            m.push(newM)
+            this.setState({ conversationMessages: m })
+        }
+    }
+
+
+
     sendMessage = (text) => {
+
+        this.state.socket.emit("message-send", {
+            text: text,
+            sender_id: this.state.currentUserID,
+            recipient_id: this.state.selectedUserID,
+        })
+
         let m = this.state.conversationMessages;
         let newM = { message: text, id: this.state.currentUserID }
         m.push(newM)
@@ -267,10 +306,10 @@ class MessageMain extends React.Component {
         }, { withCredentials: true }).then((response) => {
             console.log(response)
             let newMessages = []// use the dummy data 
-            for(let i = 0; i < response.data.length; i++) {
+            for (let i = 0; i < response.data.length; i++) {
                 let message = {
                     id: response.data[i].sender_id,
-                    message : response.data[i].message
+                    message: response.data[i].message
                 }
                 newMessages.push(message)
             }
@@ -297,14 +336,14 @@ class MessageMain extends React.Component {
         }, { withCredentials: true }).then((response) => {
             console.log(response)
             let results = []
-            for(let i = 0; i < response.data.length; i++) {
+            for (let i = 0; i < response.data.length; i++) {
                 results.push({
-                    id : response.data[i].id,
-                    username : response.data[i].username
+                    id: response.data[i].id,
+                    username: response.data[i].username
                 })
             }
             this.setState({
-                searchResults : results
+                searchResults: results
             })
 
         }).catch((response) => {
@@ -336,8 +375,8 @@ class MessageMain extends React.Component {
             <div className="MainPageBackground">
                 <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                 <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
-                <SearchBar searchResults = {this.state.searchResults} onChildClick={this.onSearchResultClick} 
-                onSearchFormChange={this.onSearchFormChange} onSearchButtonClick={this.onSearchButtonClick} />
+                <SearchBar searchResults={this.state.searchResults} onChildClick={this.onSearchResultClick}
+                    onSearchFormChange={this.onSearchFormChange} onSearchButtonClick={this.onSearchButtonClick} />
                 <MessageTypingBar onMessageSend={this.sendMessage} />
             </div>
         );
