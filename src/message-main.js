@@ -45,35 +45,22 @@ function SearchBar(props) {
 // one entry in the message side bar
 // should display a username and the most 
 // recent message
-class MessageEntry extends React.Component {
-    // props must include
-    // mostRecentMessage - a string
-    // username - a string
-    constructor(props) {
-        super(props);
-        this.state = {
-            message: props.message,
-            username: props.username,
-            id: props.id
-        }
-        this.handleClick = props.handleClick;
-    }
+// todo change to stateless function
+function MessageEntry(props) {
 
 
-    render() {
-        return (
-            <div className="MessageEntry" onClick={(e) => this.handleClick(e, this.state.id)}>
-                <h1 className="MessageEntrySender">{this.state.username}</h1>
-                <p1 className="MessageEntryBody">{this.state.message}</p1>
-            </div>
-        );
-    }
+    return (
+        <div className="MessageEntry" onClick={(e) => props.handleClick(e, props.id)}>
+            <h1 className="MessageEntrySender">{props.username}</h1>
+            <p1 className="MessageEntryBody">{props.message}</p1>
+        </div>
+    );
+
 }
 
 // the side bar for the messanger main page
 function SideBar(props) {
-
-
+    console.log("i have updated")
     return (
         <div className="MessageSideBar">
             <ul className="mList">
@@ -177,26 +164,17 @@ class MessageTypingBar extends React.Component {
 
 // the messanger main page
 class MessageMain extends React.Component {
-    // props must include
-    // a messages array as described in the constructor
-    // for a SideBar
-
-    // TODO testing data, needs deletion
-
-
-
-    // TODO testing data, needs deletion
 
     constructor(props) {
         super(props);
 
         this.state = {
-            messages: [],
-            conversationMessages: [],
-            currentUserID: -1,
-            selectedUserID: 1,
-            socket: null,
-            searchResults: []
+            messages: [], // messages in the preview bar
+            conversationMessages: [], // messages in the current conversation
+            currentUserID: -1, //id of the current user
+            selectedUserID: 1,// id of the other user who's conversation is in foucs
+            socket: null, // web socket 
+            searchResults: [] // results from a search query
         }
 
     }
@@ -271,12 +249,35 @@ class MessageMain extends React.Component {
 
     }
 
+    // receive a message from the socket
     receiveMessage = (message) => {
         if (message.sender_id == this.state.selectedUserID) {
             let m = this.state.conversationMessages;
             let newM = { message: message.text, id: message.sender_id }
             m.push(newM)
             this.setState({ conversationMessages: m })
+        }
+        else {
+            // add this message to the sidebar
+            let nUsername = ""
+            let nPreviewMessages = this.state.messages
+            // get the right username
+            for (let i = 0; i < this.state.messages.length; i++) {
+                if (nPreviewMessages[i].id == message.sender_id) {
+                    // TODO splice returns the element it removed
+                    nUsername = nPreviewMessages[i].username
+                    nPreviewMessages.splice(i, 1)
+                    break;
+                }
+            }
+            let newSidebarMessage = {
+                message: message.text,
+                id: message.sender_id,
+                username: nUsername
+            }
+            nPreviewMessages.unshift(newSidebarMessage)
+
+            this.setState({ messages: nPreviewMessages })
         }
     }
 
