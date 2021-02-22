@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import './messageMain.css'
 import axios from 'axios';
 import openSocket from 'socket.io-client';
+import {Redirect} from 'react-router-dom';
 
 // for style see 
 // css-tricks on grid layouts
@@ -13,6 +14,16 @@ const previewsURL = baseURL.concat("messaging/previews/")
 const idURL = baseURL.concat("messaging/id/")
 const conversationURL = baseURL.concat("messaging/conversation/")
 const searchURL = baseURL.concat("messaging/search/")
+const getIDURL = baseURL.concat("messaging/usernamefromid/")
+
+// create an enumeration for the types of login statuses
+const LOGIN_STATUSES = {
+    WAITING: 0,
+    LOGGED_IN: 1,
+    LOGIN_FAILED: 2
+}
+
+Object.freeze(LOGIN_STATUSES)
 
 // one single result from a search
 // props needed: username, id, onClick(e, id)
@@ -174,7 +185,8 @@ class MessageMain extends React.Component {
             currentUserID: -1, //id of the current user
             selectedUserID: 1,// id of the other user who's conversation is in foucs
             socket: null, // web socket 
-            searchResults: [] // results from a search query
+            searchResults: [], // results from a search query
+            loginStatus: LOGIN_STATUSES.WAITING
         }
 
     }
@@ -183,12 +195,15 @@ class MessageMain extends React.Component {
     componentDidMount() {
         // get the correct user id
         axios.post(idURL, {
-            username: this.state.username,
-            password: this.state.password
+            
         }, { withCredentials: true })
             .then((response) => {
                 this.setState({
-                    currentUserID: response.data.id
+                    currentUserID: response.data.id,
+                    // we can only retreive an id from this api
+                    // if we have an active session
+                    // so we are by definition logged in
+                    loginStatus: LOGIN_STATUSES.LOGGED_IN
                 })
                 console.log("User ID: ", this.state.currentUserID)
 
@@ -243,7 +258,9 @@ class MessageMain extends React.Component {
 
 
             }).catch((response) => {
-
+                this.setState({
+                    loginStatus: LOGIN_STATUSES.LOGIN_FAILED
+                })
             })
 
 
@@ -262,26 +279,29 @@ class MessageMain extends React.Component {
             let nUsername = ""
             let nPreviewMessages = this.state.messages
             // get the right username
-            for (let i = 0; i < this.state.messages.length; i++) {
-                if (nPreviewMessages[i].id == message.sender_id) {
-                    // TODO splice returns the element it removed
-                    nUsername = nPreviewMessages[i].username
-                    nPreviewMessages.splice(i, 1)
-                    break;
+            axios.post(getIDURL, {
+                id: message.sender_id
+            }, { withCredentials: true })
+            .then((response) => {
+                // todo remove entry if this user has
+                // messaged us before
+                nUsername = response.data.username
+                console.log(response)
+                let newSidebarMessage = {
+                    message: message.text,
+                    id: message.sender_id,
+                    username: nUsername
                 }
-            }
-            let newSidebarMessage = {
-                message: message.text,
-                id: message.sender_id,
-                username: nUsername
-            }
-            nPreviewMessages.unshift(newSidebarMessage)
-
-            this.setState({ messages: nPreviewMessages })
+                nPreviewMessages.unshift(newSidebarMessage)
+    
+                this.setState({ messages: nPreviewMessages })
+            })
+            .catch((response) => {
+                console.log(response)
+            })
+            
         }
     }
-
-
 
     sendMessage = (text) => {
 
@@ -291,6 +311,7 @@ class MessageMain extends React.Component {
             recipient_id: this.state.selectedUserID,
         })
 
+        // TODO add a new conversation to the left bar if applicable
         let m = this.state.conversationMessages;
         let newM = { message: text, id: this.state.currentUserID }
         m.push(newM)
@@ -299,7 +320,6 @@ class MessageMain extends React.Component {
 
     /**
      * @param {int} id the id of the user who's messages we want to look at
-     * TODO implement correctly by calling to backend
      */
     getMessages(id) {
         axios.post(conversationURL, {
@@ -323,6 +343,7 @@ class MessageMain extends React.Component {
         })
     }
 
+    // TODO rename this
     handleMessagePreviewClick = (e, id) => {
         e.preventDefault();
         this.getMessages(id)
@@ -352,6 +373,7 @@ class MessageMain extends React.Component {
         })
     }
 
+
     // props needed 
     // searchResults {username, id}, onChildClick, 
     // onSearchFormChange(e, id), onSearchButtonClick(e)
@@ -368,19 +390,40 @@ class MessageMain extends React.Component {
 
     onSearchResultClick = (e, id) => {
         e.preventDefault()
+        // this should behave the same as a preview click
+        this.handleMessagePreviewClick(e, id);
+        
 
     }
 
     render() {
-        return (
-            <div className="MainPageBackground">
-                <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
-                <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
-                <SearchBar searchResults={this.state.searchResults} onChildClick={this.onSearchResultClick}
-                    onSearchFormChange={this.onSearchFormChange} onSearchButtonClick={this.onSearchButtonClick} />
-                <MessageTypingBar onMessageSend={this.sendMessage} />
-            </div>
-        );
+        // only render the page proper if we are logged in
+        if (this.state.loginStatus === LOGIN_STATUSES.LOGGED_IN) {
+            return (
+                <div className="MainPageBackground">
+                    <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
+                    <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
+                    <SearchBar searchResults={this.state.searchResults} onChildClick={this.onSearchResultClick}
+                        onSearchFormChange={this.onSearchFormChange} onSearchButtonClick={this.onSearchButtonClick} />
+                    <MessageTypingBar onMessageSend={this.sendMessage} />
+                </div>
+            );
+        }
+        // if we have not yet been authenticated, wait
+        else if(this.state.loginStatus === LOGIN_STATUSES.WAITING) {
+            return (
+                <div className="LoadingScreen">
+                    Loading
+                </div>
+            );
+        }
+        // if we have definitively been rejected, return to 
+        // the main page
+        else {
+            return(
+                <Redirect to="/login"/>
+              );
+        }
     }
 }
 

@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import React from 'react';
 import './login.css';
 import axios from 'axios';
+import { Redirect } from 'react-router-dom'
 
 const baseURL = "http://localhost:8000/"
 const loginURL = "messaging/login/"
@@ -13,7 +14,8 @@ class LoginForm extends React.Component {
     this.state = {
       username: "",
       password: "",
-      error: ""
+      error: "",
+      loggedIn: false
     }
   }
 
@@ -42,6 +44,9 @@ class LoginForm extends React.Component {
         {withCredentials : true})
           .then((response) => {
             console.log(response);
+            this.setState ({
+              loggedIn : true
+            })
           }).catch((response) => {
             this.showError("Login failed. Do you have cookies enabled?");
           })
@@ -52,6 +57,7 @@ class LoginForm extends React.Component {
   }
 
   render() {
+    if(!this.state.loggedIn) {
     return (
       <div class="background">
         <div class="loginText">
@@ -78,6 +84,12 @@ class LoginForm extends React.Component {
       </div>
 
     );
+    }
+    else {
+      return(
+        <Redirect to="/messages" />
+      );
+    }
   }
 }
 
