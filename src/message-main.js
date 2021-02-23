@@ -25,6 +25,36 @@ const LOGIN_STATUSES = {
 
 Object.freeze(LOGIN_STATUSES)
 
+// top left bar should:
+// have a home button
+// have an online/offline status
+// for if we are connected to the socket
+function TopLeftBar(props) {
+    return(
+    <div className="TopLeftBar">
+        <div className="GoHomeButton"></div>
+        <div className="OnlineStatus"></div>
+    </div>
+    )
+}
+
+function TopCenterBar(props) {
+    if(props.conversationTarget != "") {
+    return (
+        <div className="TopCenterBar">
+            Currently chatting with {props.conversationTarget}
+        </div>
+    );
+    }
+    else {
+        return (
+            <div className="TopCenterBar">
+            No Conversation Selected
+        </div>
+        )
+    }
+}
+
 // one single result from a search
 // props needed: username, id, onClick(e, id)
 function SearchBarResult(props) {
@@ -184,6 +214,7 @@ class MessageMain extends React.Component {
             conversationMessages: [], // messages in the current conversation
             currentUserID: -1, //id of the current user
             selectedUserID: 1,// id of the other user who's conversation is in foucs
+            selectedUsername : "",
             socket: null, // web socket 
             searchResults: [], // results from a search query
             loginStatus: LOGIN_STATUSES.WAITING
@@ -350,6 +381,18 @@ class MessageMain extends React.Component {
         this.setState({
             selectedUserID: id
         })
+        axios.post(getIDURL, {
+            id: id
+        }, { withCredentials: true })
+        .then((response) => {
+            this.setState({
+                selectedUsername: response.data.username
+            })
+        })
+        .catch((response) => {
+            console.log(response)
+        })
+
     }
 
     getSearchResults = (q) => {
@@ -401,6 +444,7 @@ class MessageMain extends React.Component {
         if (this.state.loginStatus === LOGIN_STATUSES.LOGGED_IN) {
             return (
                 <div className="MainPageBackground">
+                    <TopCenterBar conversationTarget={this.state.selectedUsername}></TopCenterBar>
                     <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                     <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
                     <SearchBar searchResults={this.state.searchResults} onChildClick={this.onSearchResultClick}
