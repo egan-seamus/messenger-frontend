@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import './messageMain.css'
 import axios from 'axios';
 import openSocket from 'socket.io-client';
-import {Redirect} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import searchIcon from './search.png'
 
 // for style see 
@@ -26,32 +26,39 @@ const LOGIN_STATUSES = {
 
 Object.freeze(LOGIN_STATUSES)
 
+// TODO 
+// create a top left bar 
+// push top bar all the way to the right
+// figure out csrf
+
 // top left bar should:
 // have a home button
 // have an online/offline status
 // for if we are connected to the socket
 function TopLeftBar(props) {
-    return(
-    <div className="TopLeftBar">
-        <div className="GoHomeButton"></div>
-        <div className="OnlineStatus"></div>
-    </div>
+    return (
+        <div className="TopLeftBar">
+            <div className="GoHomeButton"></div>
+            <div className="OnlineStatus"></div>
+        </div>
     )
 }
 
 function TopCenterBar(props) {
-    if(props.conversationTarget != "") {
-    return (
-        <div className="TopCenterBar">
-            Currently chatting with {props.conversationTarget}
-        </div>
-    );
+    if (props.conversationTarget != "") {
+        return (
+            <div className="TopCenterBar">
+                <div id="TopCenterBarText">
+                    {props.conversationTarget}
+                </div>
+            </div>
+        );
     }
     else {
         return (
             <div className="TopCenterBar">
-            No Conversation Selected
-        </div>
+                No Conversation Selected
+            </div>
         )
     }
 }
@@ -187,6 +194,9 @@ class MessageTypingBar extends React.Component {
     handleClick = (e) => {
         e.preventDefault()
         this.props.onMessageSend(this.state.messageText);
+        this.setState({
+            messageText: ""
+        })
     }
 
     handleMessageChange = (e) => {
@@ -198,7 +208,7 @@ class MessageTypingBar extends React.Component {
         return (
             <div className="MessageTypingBar">
                 <form id="messageInputForm" action="">
-                    <input id="messageInputFormInput" autocomplete="off" onChange={(e) => this.handleMessageChange(e)} />
+                    <input id="messageInputFormInput" autocomplete="off" onChange={(e) => this.handleMessageChange(e)} value={this.state.messageText} />
                     <button id="messageInputFormButton" onClick={(e) => this.handleClick(e)}>Send</button>
                 </form>
             </div>
@@ -217,7 +227,7 @@ class MessageMain extends React.Component {
             conversationMessages: [], // messages in the current conversation
             currentUserID: -1, //id of the current user
             selectedUserID: 1,// id of the other user who's conversation is in foucs
-            selectedUsername : "",
+            selectedUsername: "",
             socket: null, // web socket 
             searchResults: [], // results from a search query
             loginStatus: LOGIN_STATUSES.WAITING
@@ -229,7 +239,7 @@ class MessageMain extends React.Component {
     componentDidMount() {
         // get the correct user id
         axios.post(idURL, {
-            
+
         }, { withCredentials: true })
             .then((response) => {
                 this.setState({
@@ -316,27 +326,29 @@ class MessageMain extends React.Component {
             axios.post(getIDURL, {
                 id: message.sender_id
             }, { withCredentials: true })
-            .then((response) => {
-                // todo remove entry if this user has
-                // messaged us before
-                nUsername = response.data.username
-                console.log(response)
-                let newSidebarMessage = {
-                    message: message.text,
-                    id: message.sender_id,
-                    username: nUsername
-                }
-                nPreviewMessages.unshift(newSidebarMessage)
-    
-                this.setState({ messages: nPreviewMessages })
-            })
-            .catch((response) => {
-                console.log(response)
-            })
-            
+                .then((response) => {
+                    // todo remove entry if this user has
+                    // messaged us before
+                    nUsername = response.data.username
+                    console.log(response)
+                    let newSidebarMessage = {
+                        message: message.text,
+                        id: message.sender_id,
+                        username: nUsername
+                    }
+                    nPreviewMessages.unshift(newSidebarMessage)
+
+                    this.setState({ messages: nPreviewMessages })
+                })
+                .catch((response) => {
+                    console.log(response)
+                })
+
         }
     }
 
+    // TODO message should add itself to previews
+    // once it is sent
     sendMessage = (text) => {
 
         this.state.socket.emit("message-send", {
@@ -387,14 +399,14 @@ class MessageMain extends React.Component {
         axios.post(getIDURL, {
             id: id
         }, { withCredentials: true })
-        .then((response) => {
-            this.setState({
-                selectedUsername: response.data.username
+            .then((response) => {
+                this.setState({
+                    selectedUsername: response.data.username
+                })
             })
-        })
-        .catch((response) => {
-            console.log(response)
-        })
+            .catch((response) => {
+                console.log(response)
+            })
 
     }
 
@@ -438,7 +450,7 @@ class MessageMain extends React.Component {
         e.preventDefault()
         // this should behave the same as a preview click
         this.handleMessagePreviewClick(e, id);
-        
+
 
     }
 
@@ -457,7 +469,7 @@ class MessageMain extends React.Component {
             );
         }
         // if we have not yet been authenticated, wait
-        else if(this.state.loginStatus === LOGIN_STATUSES.WAITING) {
+        else if (this.state.loginStatus === LOGIN_STATUSES.WAITING) {
             return (
                 <div className="LoadingScreen">
                     Loading
@@ -467,9 +479,9 @@ class MessageMain extends React.Component {
         // if we have definitively been rejected, return to 
         // the main page
         else {
-            return(
-                <Redirect to="/login"/>
-              );
+            return (
+                <Redirect to="/login" />
+            );
         }
     }
 }
