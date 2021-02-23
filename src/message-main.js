@@ -6,6 +6,7 @@ import axios from 'axios';
 import openSocket from 'socket.io-client';
 import { Redirect } from 'react-router-dom';
 import searchIcon from './search.png'
+import homeIcon from './home.png'
 
 // for style see 
 // css-tricks on grid layouts
@@ -35,11 +36,18 @@ Object.freeze(LOGIN_STATUSES)
 // have a home button
 // have an online/offline status
 // for if we are connected to the socket
+// know our username
 function TopLeftBar(props) {
     return (
         <div className="TopLeftBar">
-            <div className="GoHomeButton"></div>
-            <div className="OnlineStatus"></div>
+            <div className="GoHomeButton">
+                <button id="goHomeButtonButton" onClick={(e) => props.onHomeButtonClick(e)}>
+                    <img className="GoHomeButtonIcon" src={homeIcon} alt="Home" />
+                </button>
+            </div>
+            <div className="LoggedInAsBox">
+                <div id="usernameText">{props.username}</div>
+            </div>
         </div>
     )
 }
@@ -69,7 +77,9 @@ function SearchBarResult(props) {
 
     return (
         <div className="searchResult" onClick={(e) => props.onClick(e, props.id)}>
-            {props.username}
+            <div className="searchResultText">
+                {props.username}
+            </div>
         </div>
     )
 }
@@ -96,7 +106,6 @@ function SearchBar(props) {
 // one entry in the message side bar
 // should display a username and the most 
 // recent message
-// todo change to stateless function
 function MessageEntry(props) {
 
 
@@ -226,6 +235,7 @@ class MessageMain extends React.Component {
             messages: [], // messages in the preview bar
             conversationMessages: [], // messages in the current conversation
             currentUserID: -1, //id of the current user
+            currentUsername: "", //id of the logged in user
             selectedUserID: 1,// id of the other user who's conversation is in foucs
             selectedUsername: "",
             socket: null, // web socket 
@@ -250,6 +260,19 @@ class MessageMain extends React.Component {
                     loginStatus: LOGIN_STATUSES.LOGGED_IN
                 })
                 console.log("User ID: ", this.state.currentUserID)
+
+                // get the message previews
+                axios.post(getIDURL, {
+                    id: this.state.currentUserID
+                }, { withCredentials: true })
+                .then((response) => {
+                    this.setState({
+                        currentUsername: response.data.username
+                    })
+                })
+                .catch((response) => {
+                    console.log(response)
+                })
 
                 // get the message previews
                 axios.post(previewsURL, {
@@ -306,11 +329,11 @@ class MessageMain extends React.Component {
                     loginStatus: LOGIN_STATUSES.LOGIN_FAILED
                 })
             })
-
-
     }
 
     // receive a message from the socket
+    // todo preview should update when conversatoin
+    // is selected
     receiveMessage = (message) => {
         if (message.sender_id == this.state.selectedUserID) {
             let m = this.state.conversationMessages;
@@ -327,8 +350,6 @@ class MessageMain extends React.Component {
                 id: message.sender_id
             }, { withCredentials: true })
                 .then((response) => {
-                    // todo remove entry if this user has
-                    // messaged us before
                     nUsername = response.data.username
                     console.log(response)
                     let newSidebarMessage = {
@@ -336,6 +357,9 @@ class MessageMain extends React.Component {
                         id: message.sender_id,
                         username: nUsername
                     }
+                    nPreviewMessages = nPreviewMessages.filter((element => {
+                        return element.id != newSidebarMessage.id;
+                    }))
                     nPreviewMessages.unshift(newSidebarMessage)
 
                     this.setState({ messages: nPreviewMessages })
@@ -459,6 +483,7 @@ class MessageMain extends React.Component {
         if (this.state.loginStatus === LOGIN_STATUSES.LOGGED_IN) {
             return (
                 <div className="MainPageBackground">
+                    <TopLeftBar username={this.state.currentUsername}/>
                     <TopCenterBar conversationTarget={this.state.selectedUsername}></TopCenterBar>
                     <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                     <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>

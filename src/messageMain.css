@@ -1,16 +1,88 @@
+.TopLeftBar {
+    grid-column-start: 1;
+    grid-column-end:   2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #d18d7c;
+    box-shadow: 0px 3px 5px -2px #171717;
+    height: 99%;
+
+}
+
+.GoHomeButton {
+    order: 1;
+    width: 1cm;
+    height: 1cm;
+    margin-left: 10%;
+    
+}
+
+#goHomeButtonButton {
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    background: #da1c1c;
+    font-family: sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0px 3px 5px -2px #171717;
+}
+
+#goHomeButtonButton:hover,
+#goHomeButtonButton:focus {
+    background: #991212;
+
+}
+
+.GoHomeButtonIcon {
+    height: 100%;
+    width: 100%;
+}
+
+.OnlineStatus {
+    border-radius: 50%;
+    order: 2;
+    width: 8pt;
+    height: 8pt;
+    margin-left: 1cm;
+    background-color: green;
+}
+
+.LoggedInAsBox {
+    order: 2;
+    margin-left: 10%;
+}
+
+#usernameText {
+
+}
+
 .TopCenterBar {
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     grid-column-start: 2;
     grid-column-end:   3;
     grid-row-start: 1;
     grid-row-end: 2;
     background-color: #d18d7c;
-    font-size: 24pt;
+    font-size: 20pt;
+    box-shadow: 0px 3px 5px -2px #171717;
+    height: 99%;
 }
 
 #TopCenterBarText {
-    margin: 2%;
+    order: 1;
 }
 
 .MessageSideBar {
@@ -122,7 +194,19 @@
     cursor: pointer;
     margin-left: 1%;
     margin-right: 4%;
-    margin-top: 3%;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    height: 0.75cm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.searchResult:hover {
+    background-color : rgba(0,0,0,0.4);
+}
+
+.searchResultText {
 
 }
 
@@ -131,7 +215,7 @@
     grid-column-end : 4;
     grid-row-start: 2;
     grid-row-end: 3;
-    background-color: #a36f6c;
+    background-color: #f0f0f0;
     overflow-y: scroll
 }
 
@@ -154,7 +238,16 @@
     max-width: 15%;
     float : right;
     padding: 0px;
-    order : 2
+    order : 2;
+    /* display: inline-block; */
+    border: none;
+    margin: 0;
+    text-decoration: none;
+    font-family: sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
 }
 
 .HomeButtonIcon {
