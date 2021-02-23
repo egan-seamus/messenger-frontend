@@ -5,6 +5,7 @@ import './messageMain.css'
 import axios from 'axios';
 import openSocket from 'socket.io-client';
 import {Redirect} from 'react-router-dom';
+import searchIcon from './search.png'
 
 // for style see 
 // css-tricks on grid layouts
@@ -74,7 +75,9 @@ function SearchBar(props) {
         <div className="searchBar">
             <form id="searchInputform" action="">
                 <input id="searchInputformInput" autocomplete="off" placeholder="search" onChange={(e) => props.onSearchFormChange(e)} />
-                <button id="searchInputformButton" onClick={(e) => props.onSearchButtonClick(e)}>Search</button>
+                <button id="searchInputformButton" onClick={(e) => props.onSearchButtonClick(e)}>
+                    <img className="HomeButtonIcon" src={searchIcon} />
+                </button>
             </form>
             {props.searchResults.map((result) =>
                 <SearchBarResult onClick={props.onChildClick} id={result.id} username={result.username}></SearchBarResult>
