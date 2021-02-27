@@ -5,9 +5,9 @@
     grid-row-end: 2;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-around;
     align-items: center;
-    background-color: #d18d7c;
+    background-color: #e0e0e0;
     box-shadow: 0px 3px 5px -2px #171717;
     height: 99%;
 
@@ -15,9 +15,8 @@
 
 .GoHomeButton {
     order: 1;
-    width: 1cm;
-    height: 1cm;
-    margin-left: 10%;
+    width: 63px;
+    height: 66px;
     
 }
 
@@ -28,18 +27,18 @@
     border: none;
     margin: 0;
     text-decoration: none;
-    background: #da1c1c;
     font-family: sans-serif;
+    padding: 0px;
     font-size: 1rem;
     line-height: 1;
     cursor: pointer;
     text-align: center;
-    box-shadow: 0px 3px 5px -2px #171717;
+    background: #e0e0e0;
 }
 
 #goHomeButtonButton:hover,
 #goHomeButtonButton:focus {
-    background: #991212;
+    background: #e0e0e0;
 
 }
 
@@ -62,9 +61,7 @@
     margin-left: 10%;
 }
 
-#usernameText {
 
-}
 
 .TopCenterBar {
     display: flex;
@@ -82,6 +79,25 @@
 }
 
 #TopCenterBarText {
+    order: 1;
+}
+
+.TopRightBar {
+    grid-column-start: 3;
+    grid-column-end:   4;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    display: flex;
+    flex-direction: row;
+    align-items : center;
+    align-content : center;
+    justify-content : space-around;
+    background-color: #e0e0e0;
+    box-shadow: 0px 3px 5px -2px #171717;
+    height: 99%;
+}
+
+#usernameText {
     order: 1;
 }
 

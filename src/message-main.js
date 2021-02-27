@@ -6,7 +6,7 @@ import axios from 'axios';
 import openSocket from 'socket.io-client';
 import { Redirect } from 'react-router-dom';
 import searchIcon from './search.png'
-import homeIcon from './home.png'
+import homeIcon from './logo.png'
 
 // for style see 
 // css-tricks on grid layouts
@@ -22,7 +22,8 @@ const getIDURL = baseURL.concat("messaging/usernamefromid/")
 const LOGIN_STATUSES = {
     WAITING: 0,
     LOGGED_IN: 1,
-    LOGIN_FAILED: 2
+    LOGIN_FAILED: 2,
+    GO_HOME: 3
 }
 
 Object.freeze(LOGIN_STATUSES)
@@ -45,11 +46,16 @@ function TopLeftBar(props) {
                     <img className="GoHomeButtonIcon" src={homeIcon} alt="Home" />
                 </button>
             </div>
-            <div className="LoggedInAsBox">
-                <div id="usernameText">{props.username}</div>
-            </div>
         </div>
     )
+}
+
+function TopRightBar(props) {
+    return (
+        <div className="TopRightBar">
+            <div id="usernameText">Hello, {props.username}</div>
+        </div>
+    );
 }
 
 function TopCenterBar(props) {
@@ -477,13 +483,21 @@ class MessageMain extends React.Component {
 
     }
 
+    goHome = (e) => {
+        e.preventDefault();
+        this.setState({
+            loginStatus: LOGIN_STATUSES.GO_HOME
+        })
+    }
+
     render() {
         // only render the page proper if we are logged in
         if (this.state.loginStatus === LOGIN_STATUSES.LOGGED_IN) {
             return (
                 <div className="MainPageBackground">
-                    <TopLeftBar username={this.state.currentUsername} />
+                    <TopLeftBar username={this.state.currentUsername} onHomeButtonClick={this.goHome} />
                     <TopCenterBar conversationTarget={this.state.selectedUsername}></TopCenterBar>
+                    <TopRightBar username={this.state.currentUsername} />
                     <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                     <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
                     <SearchBar searchResults={this.state.searchResults} onChildClick={this.onSearchResultClick}
@@ -498,6 +512,13 @@ class MessageMain extends React.Component {
                 <div className="LoadingScreen">
                     Loading
                 </div>
+            );
+        }
+        // if we have pressed the button, we go to the home page
+        else if (this.state.loginStatus === LOGIN_STATUSES.GO_HOME) {
+            return (
+                
+                <Redirect to="/" />
             );
         }
         // if we have definitively been rejected, return to 

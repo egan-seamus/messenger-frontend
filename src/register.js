@@ -17,7 +17,8 @@ class LoginForm extends React.Component {
             password: "",
             confirmPassword: "",
             errors: "",
-            loggedIn: false
+            loggedIn: false,
+            showingError: false
         }
     }
 
@@ -34,7 +35,10 @@ class LoginForm extends React.Component {
     }
 
     showError = (message) => {
-        this.setState({ errors: message });
+        this.setState({ 
+            errors: message,
+            showingError: true
+         });
     }
 
     handleSubmitButton(e) {
@@ -92,10 +96,10 @@ class LoginForm extends React.Component {
         if (!this.state.loggedIn) {
             return (
                 <div class="registerBackground">
-                    <div class="loginText"> Register </div>
-                    <h2 class="errorMessage">{this.state.errors}</h2>
-                    <div class="homeButtons">
-                        <Form>
+                    <div class="registerText"> Register </div>
+                    <div class="registerButtons">
+                    {this.state.showingError ? <div class="registerError">{this.state.errors}</div> : null}
+                        <Form id="registerInputForm">
                             <Form.Group controlId="formRegisterUsername">
                                 <Form.Label>username</Form.Label>
                                 <Form.Control type="username" placeholder="Enter username" onChange={(e) => this.handleUsernameChange(e)} />

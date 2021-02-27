@@ -1,23 +1,32 @@
-.loginText {
+.registerText {
     order : 1;
     display : flex;
     font-size : 40px;
     font-weight : bold;
 }
 
-.errorMessage {
-    order : 2;
-    background-color : lightblue;
+.registerError {
+    order : 1;
+    background-color: rgb(255, 132, 132);
+    border: solid red 1px;
+    padding: 5px;
+    border-radius: 5px;
 }
-.homeButtons {
+
+.registerButtons {
     order : 3;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width : 300px;
     height: 400px;
-    background-color :rgb(170, 90, 90);
+    background-color : #e0e0e0;
     box-shadow: 5px 10px 5px 10px #181717;
+}
+
+#registerInputForm {
+    order: 2;
 }
 
 .registerBackground {
@@ -30,7 +39,7 @@
     width  : 100%;
     height : 100%;
     width : 100%;
-    background-color : rgb(211, 91, 91);
+    background-color : rgb(231, 222, 222);
     position : absolute;
     justify-content: flex-start;
 
