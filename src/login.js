@@ -8,6 +8,10 @@ import { Redirect } from 'react-router-dom'
 const baseURL = "http://localhost:8000/"
 const loginURL = "messaging/login/"
 
+// get the csrf token
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"; 
+axios.defaults.xsrfCookieName = "csrftoken";
+
 class LoginForm extends React.Component {
   constructor(props) {
     super(props);

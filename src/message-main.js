@@ -11,6 +11,9 @@ import homeIcon from './logo.png'
 // for style see 
 // css-tricks on grid layouts
 
+axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"; 
+axios.defaults.xsrfCookieName = "csrftoken";
+
 const baseURL = "http://localhost:8000/"
 const previewsURL = baseURL.concat("messaging/previews/")
 const idURL = baseURL.concat("messaging/id/")
