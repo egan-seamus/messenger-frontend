@@ -265,14 +265,14 @@ class MessageMain extends React.Component {
                 axios.post(getIDURL, {
                     id: this.state.currentUserID
                 }, { withCredentials: true })
-                .then((response) => {
-                    this.setState({
-                        currentUsername: response.data.username
+                    .then((response) => {
+                        this.setState({
+                            currentUsername: response.data.username
+                        })
                     })
-                })
-                .catch((response) => {
-                    console.log(response)
-                })
+                    .catch((response) => {
+                        console.log(response)
+                    })
 
                 // get the message previews
                 axios.post(previewsURL, {
@@ -341,34 +341,33 @@ class MessageMain extends React.Component {
             m.push(newM)
             this.setState({ conversationMessages: m })
         }
-        else {
-            // add this message to the sidebar
-            let nUsername = ""
-            let nPreviewMessages = this.state.messages
-            // get the right username
-            axios.post(getIDURL, {
-                id: message.sender_id
-            }, { withCredentials: true })
-                .then((response) => {
-                    nUsername = response.data.username
-                    console.log(response)
-                    let newSidebarMessage = {
-                        message: message.text,
-                        id: message.sender_id,
-                        username: nUsername
-                    }
-                    nPreviewMessages = nPreviewMessages.filter((element => {
-                        return element.id != newSidebarMessage.id;
-                    }))
-                    nPreviewMessages.unshift(newSidebarMessage)
+        // add this message to the sidebar
+        let nUsername = ""
+        let nPreviewMessages = this.state.messages
+        // get the right username
+        axios.post(getIDURL, {
+            id: message.sender_id
+        }, { withCredentials: true })
+            .then((response) => {
+                nUsername = response.data.username
+                console.log(response)
+                let newSidebarMessage = {
+                    message: message.text,
+                    id: message.sender_id,
+                    username: nUsername
+                }
+                nPreviewMessages = nPreviewMessages.filter((element => {
+                    return element.id != newSidebarMessage.id;
+                }))
+                nPreviewMessages.unshift(newSidebarMessage)
 
-                    this.setState({ messages: nPreviewMessages })
-                })
-                .catch((response) => {
-                    console.log(response)
-                })
+                this.setState({ messages: nPreviewMessages })
+            })
+            .catch((response) => {
+                console.log(response)
+            })
 
-        }
+
     }
 
     // TODO message should add itself to previews
@@ -483,7 +482,7 @@ class MessageMain extends React.Component {
         if (this.state.loginStatus === LOGIN_STATUSES.LOGGED_IN) {
             return (
                 <div className="MainPageBackground">
-                    <TopLeftBar username={this.state.currentUsername}/>
+                    <TopLeftBar username={this.state.currentUsername} />
                     <TopCenterBar conversationTarget={this.state.selectedUsername}></TopCenterBar>
                     <SideBar messages={this.state.messages} entryCallback={this.handleMessagePreviewClick}></SideBar>
                     <ConversationView messages={this.state.conversationMessages} myID={this.state.currentUserID}></ConversationView>
